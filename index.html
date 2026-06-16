@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Logístico</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f4f6f9;
+}
+
+h1{
+    text-align:center;
+    color:#333;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.15);
+    text-align:center;
+}
+
+.card h2{
+    margin:0;
+    color:#4B0082;
+}
+
+.card p{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.container{
+    background:white;
+    padding:20px;
+    margin-top:20px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.15);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:#4B0082;
+    color:white;
+}
+
+.atraso{
+    background:#ffcccc;
+}
+
+.alerta{
+    color:red;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📦 Dashboard Inteligente de Monitoramento Logístico</h1>
+
+<div class="dashboard">
+
+<div class="card">
+<h2>Total de Entregas</h2>
+<p id="total"></p>
+</div>
+
+<div class="card">
+<h2>Entregas Atrasadas</h2>
+<p id="atrasadas"></p>
+</div>
+
+<div class="card">
+<h2>% de Atraso</h2>
+<p id="percentual"></p>
+</div>
+
+<div class="card">
+<h2>Maior Problema</h2>
+<p id="maior"></p>
+</div>
+
+</div>
+
+<div class="container">
+<h2>🚨 Entregas Atrasadas</h2>
+<table id="tabela">
+<thead>
+<tr>
+<th>ID</th>
+<th>Transportadora</th>
+<th>Região</th>
+<th>Prazo</th>
+<th>Dias Reais</th>
+<th>Atraso</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<div class="container">
+<h2>📊 Atrasos por Transportadora</h2>
+<canvas id="graficoTransportadora"></canvas>
+</div>
+
+<div class="container">
+<h2>🌎 Atrasos por Região</h2>
+<canvas id="graficoRegiao"></canvas>
+</div>
+
+<script>
+
+const entregas = [
+{id:301, transportadora:"RotaMax", regiao:"Sudeste", prazo:3, real:7},
+{id:302, transportadora:"ViaCargo", regiao:"Sul", prazo:5, real:5},
+{id:303, transportadora:"FlashLog", regiao:"Nordeste", prazo:4, real:9},
+{id:304, transportadora:"RotaMax", regiao:"Norte", prazo:6, real:4},
+{id:305, transportadora:"ViaCargo", regiao:"Centro-Oeste", prazo:2, real:6},
+{id:306, transportadora:"FlashLog", regiao:"Sul", prazo:5, real:12},
+{id:307, transportadora:"RotaMax", regiao:"Sul", prazo:6, real:9},
+{id:308, transportadora:"ViaCargo", regiao:"Sudeste", prazo:3, real:4},
+{id:309, transportadora:"FlashLog", regiao:"Norte", prazo:5, real:5},
+{id:310, transportadora:"ViaCargo", regiao:"Nordeste", prazo:4, real:8}
+];
+
+const atrasadas = entregas.filter(e => e.real > e.prazo);
+
+document.getElementById("total").textContent = entregas.length;
+document.getElementById("atrasadas").textContent = atrasadas.length;
+
+document.getElementById("percentual").textContent =
+((atrasadas.length/entregas.length)*100).toFixed(0)+"%";
+
+let maiorAtraso = atrasadas.reduce((a,b)=>
+(a.real-a.prazo) > (b.real-b.prazo) ? a : b
+);
+
+document.getElementById("maior").innerHTML =
+`${maiorAtraso.transportadora}<br><span class='alerta'>${maiorAtraso.real-maiorAtraso.prazo} dias</span>`;
+
+const tbody = document.querySelector("#tabela tbody");
+
+atrasadas.forEach(e=>{
+    let atraso = e.real - e.prazo;
+
+    tbody.innerHTML += `
+    <tr class="atraso">
+        <td>${e.id}</td>
+        <td>${e.transportadora}</td>
+        <td>${e.regiao}</td>
+        <td>${e.prazo}</td>
+        <td>${e.real}</td>
+        <td>${atraso}</td>
+    </tr>
+    `;
+});
+
+const atrasoTransportadora = {};
+const atrasoRegiao = {};
+
+atrasadas.forEach(e=>{
+
+    atrasoTransportadora[e.transportadora] =
+    (atrasoTransportadora[e.transportadora] || 0) + 1;
+
+    atrasoRegiao[e.regiao] =
+    (atrasoRegiao[e.regiao] || 0) + 1;
+
+});
+
+new Chart(document.getElementById("graficoTransportadora"),{
+    type:"bar",
+    data:{
+        labels:Object.keys(atrasoTransportadora),
+        datasets:[{
+            label:"Entregas Atrasadas",
+            data:Object.values(atrasoTransportadora)
+        }]
+    }
+});
+
+new Chart(document.getElementById("graficoRegiao"),{
+    type:"pie",
+    data:{
+        labels:Object.keys(atrasoRegiao),
+        datasets:[{
+            data:Object.values(atrasoRegiao)
+        }]
+    }
+});
+
+</script>
+
+</body>
+</html>
