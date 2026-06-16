@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Logístico</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{font-family:Arial,sans-serif;margin:20px}
+.cards{display:flex;gap:15px;flex-wrap:wrap}
+.card{border:1px solid #ccc;padding:12px;border-radius:8px;min-width:180px}
+table{border-collapse:collapse;width:100%;margin-top:15px}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+.atraso{background:#ffd6d6}
+canvas{max-width:700px;margin-top:20px}
+</style>
+</head>
+<body>
+<h1>Dashboard Inteligente de Monitoramento Logístico</h1>
+
+<div class="cards">
+<div class="card"><b>Total Entregas</b><br>10</div>
+<div class="card"><b>Entregas Atrasadas</b><br>7</div>
+<div class="card"><b>% Atraso</b><br>70%</div>
+<div class="card"><b>Maior Atraso</b><br>FlashLog (7 dias)</div>
+</div>
+
+<h2>Entregas Atrasadas</h2>
+<table>
+<tr><th>ID</th><th>Transportadora</th><th>Região</th><th>Prazo</th><th>Dias Reais</th><th>Atraso</th></tr>
+<tr class="atraso"><td>301</td><td>RotaMax</td><td>Sudeste</td><td>3</td><td>7</td><td>4</td></tr>
+<tr class="atraso"><td>303</td><td>FlashLog</td><td>Nordeste</td><td>4</td><td>9</td><td>5</td></tr>
+<tr class="atraso"><td>305</td><td>ViaCargo</td><td>Centro-Oeste</td><td>2</td><td>6</td><td>4</td></tr>
+<tr class="atraso"><td>306</td><td>FlashLog</td><td>Sul</td><td>5</td><td>12</td><td>7</td></tr>
+<tr class="atraso"><td>307</td><td>RotaMax</td><td>Sul</td><td>6</td><td>9</td><td>3</td></tr>
+<tr class="atraso"><td>308</td><td>ViaCargo</td><td>Sudeste</td><td>3</td><td>4</td><td>1</td></tr>
+<tr class="atraso"><td>310</td><td>ViaCargo</td><td>Nordeste</td><td>4</td><td>8</td><td>4</td></tr>
+</table>
+
+<canvas id="transp"></canvas>
+<canvas id="reg"></canvas>
+
+<script>
+new Chart(document.getElementById('transp'),{
+type:'bar',
+data:{
+labels:['RotaMax','ViaCargo','FlashLog'],
+datasets:[{label:'Entregas atrasadas',data:[2,3,2]}]
+}
+});
+
+new Chart(document.getElementById('reg'),{
+type:'bar',
+data:{
+labels:['Sudeste','Sul','Nordeste','Centro-Oeste','Norte'],
+datasets:[{label:'Atrasos por região',data:[2,2,2,1,0]}]
+}
+});
+</script>
+</body>
+</html>
